@@ -1,26 +1,56 @@
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import pojo.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import static pojo.RSAUtil.encrypt;
 import static pojo.RSAUtil.publicKey;
-
+import sun.misc.IOUtils;
+@MultipartConfig
 public class encrypt extends HttpServlet {
     public static String encryptedString;
+//    private String getFileName(final Part part){
+//        for(String content:part.getHeader("content-disposition").split(";")){
+//            if(content.trim().startsWith("filename")){
+//                return content.substring(content.indexOf('=')+1).trim().replace("\"","");
+//            }
+//        }
+//        return null;
+//    }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             ServletContext context=getServletContext();
             String s;
-            
-                s=request.getParameter("inp");  
-            
+            s=request.getParameter("inp"); 
+            if(s.isEmpty()){
+            final Part filepart=request.getPart("file");
+           // final String filename=getFileName(filepart);
+            InputStream filecontent=filepart.getInputStream();
+               ByteArrayOutputStream result = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                for (int length; (length = filecontent.read(buffer)) != -1; ) {
+                    result.write(buffer, 0, length);
+                }
+
+                s= result.toString();
+            }
+                //System.out.print(st);
             if(!s.isEmpty()){
                     encryptedString = Base64.getEncoder().encodeToString(encrypt(s, publicKey));
             }else{
@@ -52,7 +82,7 @@ public class encrypt extends HttpServlet {
             out.println("<form action='decrypt' method='post'>");
             out.println("<center><button class='downloadBtn' type='submit'><i class='fa-solid fa-file-arrow-down'></i> Decrypt</button></center><br><br>");
             out.println("</form>");
-            out.println("<center><button class='downloadBtn' type='submit' onclick='download()'><i class='fa-solid fa-file-arrow-down' ></i> Download</button></center>");
+            out.println("<center><button class='downloadBtn' type='submit' onclick='downloadEncrypted()'><i class='fa-solid fa-file-arrow-down' ></i> Download</button></center>");
             out.println("</body>");
             out.println("</html>");
         }catch(Exception ex){
