@@ -1,4 +1,4 @@
-CRYPTOCIPHER
+CRYPTOCIPHER\n
 This project uses Rivest-Shamir-Adleman algorithm in cryptography to encrypt and decypt a text message.
 It is a public key or asymmetric key cryptography which means it uses both public and private keys for encryption hence making it more secure and safe to most of the cryptanalysis attacks.
 This web application allows a user to enter a text or upload a text file and the algorithm will encypt the plain text which can be downloaded or simply viewed in the website itself.
