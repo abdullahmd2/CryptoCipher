@@ -24,6 +24,7 @@ public class decrypt extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    public static String decryptedString;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -31,7 +32,7 @@ public class decrypt extends HttpServlet {
             if(encrypt.encryptedString.equalsIgnoreCase("Please enter a text or upload a file"))
             response.sendRedirect("index.html");
             else{
-            String decryptedString = RSAUtil.decrypt(encrypt.encryptedString, privateKey);
+            decryptedString = RSAUtil.decrypt(encrypt.encryptedString, privateKey);
                     //System.out.println(decryptedString);
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -41,6 +42,7 @@ public class decrypt extends HttpServlet {
             out.println("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
             out.println("<title>Encrypt</title>");  
             out.println("<link rel='stylesheet' href='Styles/style.css'>");
+            out.println("<script src='/cipher/download.js'></script>");
             out.println("</head>");
             out.println("<body>");
             out.println("<header>");
@@ -58,9 +60,7 @@ public class decrypt extends HttpServlet {
             out.println("<form action='index.html' method='post'>");
                 out.println("<center><button class='downloadBtn' type='submit'><i class='fa-solid fa-file-arrow-down'></i> Encrypt</button></center><br><br>");
             out.println("</form>");
-            out.println("<form action='download' method='post'>");
-                out.println("<center><button class='downloadBtn' type='submit'><i class='fa-solid fa-file-arrow-down'></i> Download</button></center>");
-            out.println("</form>");
+                out.println("<center><button class='downloadBtn' type='submit' onclick='downloadDecrypted()'><i class='fa-solid fa-file-arrow-down'></i> Download</button></center>");
             out.println("</body>");
             out.println("</html>");
             }
